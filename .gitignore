@@ -6,3 +6,5 @@ __pycache__/
 *.json
 *.index
 .env" > .gitignore
+data/vector_store/
+.env
