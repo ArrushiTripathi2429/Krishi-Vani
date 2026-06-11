@@ -3,14 +3,16 @@
 # Goal: Main FastAPI endpoint — ties everything together
 # ============================================================
 
-from fastapi import APIRouter
+
+from fastapi import APIRouter, UploadFile, File  # sirf yeh ek line
 from pydantic import BaseModel
 from typing import Optional
 import sys
 import os
+import tempfile
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../rag"))
-
+from transcribe import transcribe_audio
 from retriever import retrieve
 from synthesizer import synthesize
 from intent_extractor import extract_intent
@@ -106,3 +108,52 @@ async def handle_query(request: QueryRequest):
         fallback_triggered = fallback_triggered,
         best_score        = best_score,
     )
+
+    # ── Voice endpoint — add at bottom of query.py ──────────────
+@router.post("/voice-query", response_model=QueryResponse)
+async def handle_voice_query(
+    audio: UploadFile = File(...),
+    district: Optional[str] = None,
+    language: str = "hindi",
+):
+    """
+    Voice RAG pipeline:
+    1. Save uploaded audio to temp file
+    2. Groq Whisper → text
+    3. Pass text to existing RAG pipeline
+    """
+
+    # Step 1: Save audio to temp file
+    suffix = os.path.splitext(audio.filename)[-1] or ".webm"
+    with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+        contents = await audio.read()
+        tmp.write(contents)
+        tmp_path = tmp.name
+
+    try:
+        # Step 2: Transcribe
+        whisper_lang = "hi" if language == "hindi" else "en"
+        transcription = transcribe_audio(tmp_path, language=whisper_lang)
+
+        if not transcription["success"]:
+            return QueryResponse(
+                answer="आवाज़ सुनने में दिक्कत हुई। कृपया दोबारा बोलें।",
+                sources=[],
+                agro_zone=None,
+                crop_detected=None,
+                fallback_triggered=False,
+                best_score=0.0,
+            )
+
+        transcribed_text = transcription["text"]
+
+        # Step 3: Reuse existing RAG pipeline
+        fake_request = QueryRequest(
+            query=transcribed_text,
+            district=district,
+            language=language,
+        )
+        return await handle_query(fake_request)
+
+    finally:
+        os.unlink(tmp_path)  # cleanup temp file
