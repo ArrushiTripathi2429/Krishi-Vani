@@ -9,7 +9,8 @@ from groq import Groq
 from dotenv import load_dotenv
 from retriever import get_zone_from_district
 
-load_dotenv()
+
+load_dotenv(os.path.join(os.path.dirname(__file__), "..", "..", ".env"))
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 
@@ -43,7 +44,7 @@ Common crops: Wheat, Paddy (Dhan), Sugarcane, Potato, Mustard, Mango, Mentha, To
 Common UP districts: LUCKNOW, RAE BARELI, VARANASI, AGRA, GORAKHPUR, JHANSI, ALLAHABAD, KANPUR NAGAR"""
 
     response = client.chat.completions.create(
-        model="llama3-8b-8192",
+        model="llama-3.1-8b-instant",
         messages=[{"role": "user", "content": prompt}],
         temperature=0.0,
         max_tokens=200,

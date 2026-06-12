@@ -157,3 +157,68 @@ async def handle_voice_query(
 
     finally:
         os.unlink(tmp_path)  # cleanup temp file
+
+
+        # ── Chat models ──────────────────────────────────────────────
+class ChatMessage(BaseModel):
+    role: str
+    content: str
+
+class ChatRequest(BaseModel):
+    message: str
+    history: list[ChatMessage] = []
+    language: Optional[str] = "english"
+
+class ChatResponse(BaseModel):
+    answer: str
+    is_farming: bool
+    sources: list = []
+
+@router.post("/chat", response_model=ChatResponse)
+async def handle_chat(request: ChatRequest):
+    farming_keywords = [
+        "crop", "plant", "soil", "fertilizer", "pest", "disease", "harvest",
+        "seed", "irrigation", "wheat", "paddy", "sugarcane", "potato", "mango",
+        "fasal", "khet", "beej", "khad", "keede", "paani", "gehu", "dhan",
+        "yellow", "leaves", "fungus", "spray", "insects", "blight", "rot"
+    ]
+    is_farming = any(kw in request.message.lower() for kw in farming_keywords)
+
+    if is_farming:
+        intent = extract_intent(request.message)
+        crop = intent.get("crop")
+        agro_zone = intent.get("agro_zone")
+        translated_query = intent.get("translated_query", request.message)
+
+        retrieval = retrieve(query=translated_query, agro_zone=agro_zone, crop=crop, top_k=5)
+        results = retrieval["results"]
+
+        if retrieval["fallback_triggered"]:
+            retrieval = retrieve(query=translated_query, agro_zone=None, crop=crop, top_k=5)
+            results = retrieval["results"]
+
+        synthesis = synthesize(
+            query=request.message,
+            retrieved_results=results,
+            language=request.language or "english",
+        )
+        return ChatResponse(answer=synthesis["answer"], is_farming=True, sources=synthesis["sources"])
+
+    else:
+        from groq import Groq
+        groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+        messages = [{"role": "system", "content": "You are KrishiVani, a friendly AI assistant for Indian farmers. Answer general questions naturally and concisely."}]
+        for msg in request.history[-6:]:
+            messages.append({"role": msg.role, "content": msg.content})
+        messages.append({"role": "user", "content": request.message})
+
+        response = groq_client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=messages,
+            temperature=0.7,
+            max_tokens=400,
+        )
+        return ChatResponse(answer=response.choices[0].message.content, is_farming=False, sources=[])
+
+
+

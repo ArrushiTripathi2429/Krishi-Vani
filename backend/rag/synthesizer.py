@@ -76,7 +76,7 @@ Please provide a helpful answer based on the above context."""
 
     # Step 3: Call Groq
     response = client.chat.completions.create(
-        model="llama3-8b-8192",  # fast + free
+        model="llama-3.1-8b-instant",
         messages=[
             {"role": "system", "content": system_prompt},
             {"role": "user",   "content": user_prompt},
