@@ -126,8 +126,8 @@ df['agro_zone'] = df['district'].apply(get_zone)
 output_path = "data/processed/kcc_up_clean.csv"
 df.to_csv(output_path, index=False, encoding='utf-8-sig')
 
-print(f"\n✅ Cleaned dataset saved: {output_path}")
-print(f"✅ Final rows: {len(df):,}")
+print(f"\n Cleaned dataset saved: {output_path}")
+print(f"Final rows: {len(df):,}")
 print(f"\nZone distribution:")
 print(df['agro_zone'].value_counts())
 print(f"\nTop crops:")

@@ -16,7 +16,8 @@ from transcribe import transcribe_audio
 from retriever import retrieve
 from synthesizer import synthesize
 from intent_extractor import extract_intent
-
+from db import create_thread, save_message, get_thread_messages, get_all_threads, delete_thread, update_thread_title
+import uuid
 router = APIRouter()
 
 
@@ -221,4 +222,67 @@ async def handle_chat(request: ChatRequest):
         return ChatResponse(answer=response.choices[0].message.content, is_farming=False, sources=[])
 
 
+# ── Thread models ─────────────────────────────────────────────
+class ThreadChatRequest(BaseModel):
+    message: str
+    thread_id: Optional[str] = None  # None = new thread
+    language: Optional[str] = "english"
+
+class ThreadChatResponse(BaseModel):
+    answer: str
+    is_farming: bool
+    sources: list = []
+    thread_id: str
+
+# ── Thread chat endpoint ──────────────────────────────────────
+@router.post("/thread-chat", response_model=ThreadChatResponse)
+async def handle_thread_chat(request: ThreadChatRequest):
+    # Create new thread if not provided
+    thread_id = request.thread_id or str(uuid.uuid4())
+    await create_thread(thread_id)
+
+    # Get history from DB
+    history = await get_thread_messages(thread_id)
+
+    # Save user message
+    await save_message(thread_id, "user", request.message)
+
+    # Reuse /chat logic
+    chat_req = ChatRequest(
+        message=request.message,
+        history=[ChatMessage(role=m["role"], content=m["content"]) for m in history],
+        language=request.language,
+    )
+    response = await handle_chat(chat_req)
+
+    # Save assistant message
+    await save_message(thread_id, "assistant", response.answer, response.is_farming, response.sources)
+
+    # Auto-title thread from first message
+    if len(history) == 0:
+        title = request.message[:40] + "..." if len(request.message) > 40 else request.message
+        await update_thread_title(thread_id, title)
+
+    return ThreadChatResponse(
+        answer=response.answer,
+        is_farming=response.is_farming,
+        sources=response.sources,
+        thread_id=thread_id,
+    )
+
+# ── Get all threads ───────────────────────────────────────────
+@router.get("/threads")
+async def get_threads():
+    return await get_all_threads()
+
+# ── Get thread messages ───────────────────────────────────────
+@router.get("/threads/{thread_id}/messages")
+async def get_messages(thread_id: str):
+    return await get_thread_messages(thread_id)
+
+# ── Delete thread ─────────────────────────────────────────────
+@router.delete("/threads/{thread_id}")
+async def remove_thread(thread_id: str):
+    await delete_thread(thread_id)
+    return {"status": "deleted"}
 

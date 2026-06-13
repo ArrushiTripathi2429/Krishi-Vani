@@ -13,21 +13,6 @@ client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 
 def transcribe_audio(audio_file_path: str, language: str = "hi") -> dict:
-    """
-    Convert audio file to text using Groq Whisper.
-    
-    Args:
-        audio_file_path: Path to audio file (mp3, wav, m4a, webm)
-        language: "hi" for Hindi, "en" for English
-    
-    Returns:
-        {
-            "text": str,
-            "language": str,
-            "success": bool
-        }
-    """
-
     try:
         with open(audio_file_path, "rb") as audio_file:
             response = client.audio.transcriptions.create(
@@ -37,8 +22,18 @@ def transcribe_audio(audio_file_path: str, language: str = "hi") -> dict:
                 response_format="text",
             )
 
+        text = response.strip()
+
+        if not text or len(text) < 3:
+            return {
+                "text"    : "",
+                "language": language,
+                "success" : False,
+                "error"   : "Empty transcription",
+            }
+
         return {
-            "text"    : response.strip(),
+            "text"    : text,
             "language": language,
             "success" : True,
         }
