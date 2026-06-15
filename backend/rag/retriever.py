@@ -15,9 +15,10 @@ BASE_DIR = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "..", "..", "data", "vector_store")
 )
 
-FAISS_PATH    = os.path.join(BASE_DIR, "kcc_index.faiss")
-METADATA_PATH = os.path.join(BASE_DIR, "kcc_metadata.pkl")
-TEXTS_PATH    = os.path.join(BASE_DIR, "kcc_texts.pkl")
+
+FAISS_PATH    = "/app/backend/data/vector_store/kcc_index.faiss"
+METADATA_PATH = "/app/backend/data/vector_store/kcc_metadata.pkl"
+TEXTS_PATH    = "/app/backend/data/vector_store/kcc_texts.pkl"
 
 print(f"Looking for FAISS index at: {FAISS_PATH}")
 
