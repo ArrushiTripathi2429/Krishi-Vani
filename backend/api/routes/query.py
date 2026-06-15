@@ -97,7 +97,7 @@ async def handle_query(request: QueryRequest):
     synthesis = synthesize(
         query             = request.query,
         retrieved_results = results,
-        language          = request.language or "hindi",
+        language          = request.language or "english",
     )
 
     # Step 5: Return response
@@ -181,7 +181,11 @@ async def handle_chat(request: ChatRequest):
         "crop", "plant", "soil", "fertilizer", "pest", "disease", "harvest",
         "seed", "irrigation", "wheat", "paddy", "sugarcane", "potato", "mango",
         "fasal", "khet", "beej", "khad", "keede", "paani", "gehu", "dhan",
-        "yellow", "leaves", "fungus", "spray", "insects", "blight", "rot"
+        "yellow", "leaves", "fungus", "spray", "insects", "blight", "rot",  "apple", "tomato", "onion", "garlic", "mustard", "cotton", "maize",
+    "soybean", "groundnut", "sunflower", "rice", "barley", "gram", "lentil",
+    "worm", "infected", "infection", "dying", "wilting", "drought", "flood",
+    "seb", "tamatar", "pyaaz", "sarso", "kapas", "makka", "atta", "dalhan",
+    "rog", "keeda", "sukha", "barbaad", "harvest", "yield", "production",
     ]
     is_farming = any(kw in request.message.lower() for kw in farming_keywords)
 

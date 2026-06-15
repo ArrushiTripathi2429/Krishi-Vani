@@ -41,7 +41,7 @@ Return this exact JSON format:
 }}
 
 Common crops: Wheat, Paddy (Dhan), Sugarcane, Potato, Mustard, Mango, Mentha, Tomato, Onion
-Common UP districts: LUCKNOW, RAE BARELI, VARANASI, AGRA, GORAKHPUR, JHANSI, ALLAHABAD, KANPUR NAGAR"""
+Common UP districts: LUCKNOW, RAE BARELI, VARANASI, AGRA, GORAKHPUR, JHANSI, ALLAHABAD, KANPUR NAGAR, SITAPUR, HARDOI"""
 
     response = client.chat.completions.create(
         model="llama-3.1-8b-instant",

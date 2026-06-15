@@ -43,7 +43,7 @@ def retrieve(
     agro_zone: Optional[str] = None,
     crop: Optional[str] = None,
     top_k: int = 5,
-    similarity_threshold: float = 0.60,
+    similarity_threshold: float = 0.35,  # 0.60 → 0.35
 ) -> dict:
 
     # Step 1: Embed query

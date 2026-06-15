@@ -15,7 +15,7 @@ client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 def synthesize(
     query: str,
     retrieved_results: list,
-    language: str = "hindi",  # "hindi" or "english"
+    language: str = "english",  # "hindi" or "english"
 ) -> dict:
     """
     Build context from retrieved chunks → send to Groq → return answer.
@@ -61,11 +61,13 @@ def synthesize(
 - केवल संदर्भ में दी गई जानकारी का उपयोग करें
 - यदि संदर्भ में उत्तर नहीं है तो स्पष्ट रूप से बताएं"""
     else:
-        system_prompt = """You are an agricultural expert helping Indian farmers.
-Answer the farmer's question based on the context below (real answers from KCC experts).
-- Keep the answer simple and clear
-- Only use information from the provided context
-- If the answer is not in context, say so clearly"""
+        system_prompt = """You are KrishiVani, an expert agricultural assistant for Indian farmers.
+Answer the farmer's question based on the KCC expert database context below.
+- Give a DIRECT, ACTIONABLE answer
+- Recommend specific pesticides, doses, and timing if relevant
+- Even if the exact district is not in context, use the closest regional data
+- DO NOT say "context doesn't have answer" — always give your best expert advice
+- Keep it practical and simple for a farmer to understand"""
 
     user_prompt = f"""Farmer's Question: {query}
 
