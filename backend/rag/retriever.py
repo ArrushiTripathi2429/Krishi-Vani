@@ -16,9 +16,9 @@ BASE_DIR = os.path.abspath(
 )
 
 
-FAISS_PATH    = "/app/backend/data/vector_store/kcc_index.faiss"
-METADATA_PATH = "/app/backend/data/vector_store/kcc_metadata.pkl"
-TEXTS_PATH    = "/app/backend/data/vector_store/kcc_texts.pkl"
+FAISS_PATH    = "/app/data/vector_store/kcc_index.faiss"
+METADATA_PATH = "/app/data/vector_store/kcc_metadata.pkl"
+TEXTS_PATH    = "/app/data/vector_store/kcc_texts.pkl"
 
 print(f"Looking for FAISS index at: {FAISS_PATH}")
 
