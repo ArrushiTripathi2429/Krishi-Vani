@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+sentence-transformers
+faiss-cpu
+groq
+python-dotenv
+aiosqlite
+python-multipart
+numpy
+tqdm

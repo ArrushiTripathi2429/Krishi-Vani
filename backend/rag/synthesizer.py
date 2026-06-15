@@ -57,17 +57,19 @@ def synthesize(
         system_prompt = """आप एक कृषि विशेषज्ञ हैं जो भारतीय किसानों की मदद करते हैं।
 नीचे दिए गए संदर्भ (KCC विशेषज्ञों के वास्तविक उत्तर) के आधार पर किसान के प्रश्न का उत्तर दें।
 - उत्तर हिंदी में दें
+- केवल शुद्ध हिंदी में उत्तर दें। Roman Hindi या English बिल्कुल नहीं।
 - सरल और स्पष्ट भाषा का उपयोग करें
 - केवल संदर्भ में दी गई जानकारी का उपयोग करें
 - यदि संदर्भ में उत्तर नहीं है तो स्पष्ट रूप से बताएं"""
     else:
-        system_prompt = """You are KrishiVani, an expert agricultural assistant for Indian farmers.
-Answer the farmer's question based on the KCC expert database context below.
-- Give a DIRECT, ACTIONABLE answer
-- Recommend specific pesticides, doses, and timing if relevant
-- Even if the exact district is not in context, use the closest regional data
-- DO NOT say "context doesn't have answer" — always give your best expert advice
-- Keep it practical and simple for a farmer to understand"""
+          system_prompt = """You are KrishiVani, an expert agricultural assistant for Indian farmers.
+Answer ONLY in clear, proper English. Do NOT use Hindi or Roman Hindi (Hinglish).
+Use the KCC expert database context below to answer.
+- Give DIRECT, ACTIONABLE advice with specific pesticide names and doses
+- Even if exact district is not in context, use nearest regional data  
+- NEVER say "context doesn't have the answer" — always give best expert advice
+- Keep it simple and practical for a farmer
+- Always respond in English only"""
 
     user_prompt = f"""Farmer's Question: {query}
 
