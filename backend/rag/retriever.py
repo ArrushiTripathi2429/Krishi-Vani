@@ -119,3 +119,7 @@ def get_zone_from_district(district: str) -> str:
     if not district:
         return "central_plain"
     return DISTRICT_TO_ZONE.get(district.upper().strip(), "central_plain")
+print("CWD:", os.getcwd())
+print("__file__:", __file__)
+print("BASE_DIR:", BASE_DIR)
+print("FAISS EXISTS:", os.path.exists(FAISS_PATH))
