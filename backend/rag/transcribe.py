@@ -1,7 +1,4 @@
-# ============================================================
-# backend/rag/transcribe.py
-# Goal: Convert voice input (audio file) → text using Groq Whisper
-# ============================================================
+
 
 import os
 from groq import Groq

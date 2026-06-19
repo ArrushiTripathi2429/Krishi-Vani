@@ -1,10 +1,8 @@
-
-echo "data/raw/
+data/raw/
 data/processed/
+data/vector_store/
 __pycache__/
 *.csv
-*.json
+data/*.json
 *.index
-.env" > .gitignore
-data/vector_store/
 .env

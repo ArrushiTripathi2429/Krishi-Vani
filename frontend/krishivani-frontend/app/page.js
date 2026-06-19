@@ -5,7 +5,7 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import VoiceRecorder from "@/components/VoiceRecorder";
 
-const API = "http://localhost:8000/api";
+const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
 
 export default function Home() {
   const [query, setQuery] = useState("");
